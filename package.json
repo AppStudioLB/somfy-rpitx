@@ -1,0 +1,39 @@
+{
+  "name": "homebridge-somfy-rpitx",
+  "displayName": "Homebridge Somfy rpitx",
+  "version": "0.2.0",
+  "description": "Expose Korean 447.7 MHz Somfy RTS blinds controlled by somfy-rpitx as HomeKit window coverings.",
+  "type": "module",
+  "main": "homebridge/index.js",
+  "license": "MIT",
+  "author": "somfy-rpitx contributors",
+  "homepage": "https://github.com/AppStudioLB/somfy-rpitx#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AppStudioLB/somfy-rpitx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AppStudioLB/somfy-rpitx/issues"
+  },
+  "keywords": [
+    "homebridge-plugin",
+    "somfy",
+    "rts",
+    "rpitx",
+    "window-covering"
+  ],
+  "engines": {
+    "node": "^20.0.0 || ^22.10.0 || ^24.0.0",
+    "homebridge": "^1.8.0 || ^2.0.0"
+  },
+  "scripts": {
+    "test": "node --test homebridge/test/*.test.js",
+    "test:syntax": "node --check homebridge/index.js && node --check homebridge/platform.js && node --check homebridge/accessory.js"
+  },
+  "files": [
+    "homebridge/*.js",
+    "config.schema.json",
+    "README.md",
+    "LICENSE"
+  ]
+}
