@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "somfy-rpitx"
+version = "0.1.0"
+description = "Somfy RTS frame generation and configurable 447.7 MHz FSK output for Raspberry Pi/rpitx"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "somfy-rpitx contributors" }]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/AppStudioLB/somfy-rpitx"
+Repository = "https://github.com/AppStudioLB/somfy-rpitx.git"
+
+[project.scripts]
+somfy-rpitx = "somfy_rpitx.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

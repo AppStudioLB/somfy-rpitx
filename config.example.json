@@ -1,0 +1,15 @@
+{
+  "rf": {
+    "center_frequency_hz": 447700000,
+    "deviation_hz": 3000,
+    "mark_frequency_hz": null,
+    "space_frequency_hz": null,
+    "invert_mark_space": false,
+    "tick_us": 4
+  },
+  "frame_count": 3,
+  "prog_frame_count": 4,
+  "state_file": "/var/lib/somfy-rpitx/state.json",
+  "transmitter_executable": "somfy-rpitx-tx",
+  "transmit_enabled": false
+}
