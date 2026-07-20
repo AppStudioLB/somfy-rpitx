@@ -1,0 +1,109 @@
+{
+  "pluginAlias": "SomfyRpitx",
+  "pluginType": "platform",
+  "singular": true,
+  "strictValidation": false,
+  "schema": {
+    "type": "object",
+    "required": [
+      "name",
+      "blinds"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "title": "Platform Name",
+        "type": "string",
+        "default": "Somfy rpitx"
+      },
+      "cliPath": {
+        "title": "somfy-rpitx CLI Path",
+        "type": "string",
+        "default": "/usr/local/bin/somfy-rpitx",
+        "required": true
+      },
+      "useSudo": {
+        "title": "Run through passwordless sudo",
+        "type": "boolean",
+        "default": true,
+        "required": true
+      },
+      "sudoPath": {
+        "title": "sudo Path",
+        "type": "string",
+        "default": "/usr/bin/sudo",
+        "required": true
+      },
+      "commandTimeoutSeconds": {
+        "title": "Command Timeout",
+        "description": "Maximum time allowed for one RF command.",
+        "type": "number",
+        "minimum": 1,
+        "maximum": 60,
+        "default": 15,
+        "required": true
+      },
+      "blinds": {
+        "title": "Blinds",
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "name",
+            "configPath",
+            "stateFile",
+            "openTimeSeconds",
+            "closeTimeSeconds"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "title": "Stable ID",
+              "description": "Unique ID that must not change after pairing with HomeKit.",
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._-]+$"
+            },
+            "name": {
+              "title": "Blind Name",
+              "type": "string"
+            },
+            "configPath": {
+              "title": "somfy-rpitx Config",
+              "type": "string",
+              "default": "/etc/somfy-rpitx/config.json"
+            },
+            "stateFile": {
+              "title": "Rolling-code State File",
+              "type": "string",
+              "default": "/var/lib/somfy-rpitx/state.json"
+            },
+            "openTimeSeconds": {
+              "title": "Full Opening Time",
+              "type": "number",
+              "minimum": 1,
+              "maximum": 600,
+              "default": 25
+            },
+            "closeTimeSeconds": {
+              "title": "Full Closing Time",
+              "type": "number",
+              "minimum": 1,
+              "maximum": 600,
+              "default": 25
+            },
+            "initialPosition": {
+              "title": "Initial Estimated Position",
+              "description": "0 is fully closed and 100 is fully open.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100,
+              "default": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

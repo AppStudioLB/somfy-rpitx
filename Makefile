@@ -1,11 +1,12 @@
 PYTHON ?= python3
 CXX ?= c++
+NPM ?= npm
 PREFIX ?= /usr/local
 DESTDIR ?=
 CXXFLAGS ?= -std=c++14 -O2 -Wall -Wextra
 LDLIBS ?= -lrpitx -lm -lrt -lpthread
 
-.PHONY: all native test install clean
+.PHONY: all native test test-python test-homebridge install clean
 
 all: native
 
@@ -15,8 +16,14 @@ build/somfy-rpitx-tx: native/somfy_rpitx_tx.cpp
 	mkdir -p build
 	$(CXX) $(CXXFLAGS) -o $@ $< $(LDLIBS)
 
-test:
+test: test-python test-homebridge
+
+test-python:
 	PYTHONPATH=src $(PYTHON) -m unittest discover -s tests -v
+
+test-homebridge:
+	$(NPM) test
+	$(NPM) run test:syntax
 
 install: native
 	$(PYTHON) -m pip install . --prefix="$(DESTDIR)$(PREFIX)"
