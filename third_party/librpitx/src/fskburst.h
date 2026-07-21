@@ -9,6 +9,7 @@ class fskburst:public bufferdma,public clkgpio,public pwmgpio,public pcmgpio
 {
 	protected:
 	float freqdeviation;
+	float symbolrate;
 	uint32_t Originfsel;
 	bool syncwithpwm;
 	dma_cb_t *lastcbp;

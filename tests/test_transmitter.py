@@ -52,6 +52,7 @@ class TransmitterTests(unittest.TestCase):
         self.assertEqual(arguments[0], "/usr/local/bin/somfy-rpitx-tx")
         self.assertIn("--invert-mark-space", arguments)
         self.assertEqual(kwargs["input"], "1 644\n-1 700\n")
+        self.assertGreaterEqual(kwargs["timeout"], 3.0)
         self.assertNotIn("shell", kwargs)
         self.assertEqual(log, "native summary")
 
@@ -69,6 +70,20 @@ class TransmitterTests(unittest.TestCase):
             geteuid=lambda: 0,
         )
         with self.assertRaisesRegex(RuntimeError, "DMA failed"):
+            backend.transmit([Pulse(True, 644, "data", 0)])
+
+    def test_backend_timeout_is_reported(self) -> None:
+        def runner(arguments, **kwargs):
+            raise subprocess.TimeoutExpired(arguments, kwargs["timeout"])
+
+        settings = Settings(rf=FSKSettings(deviation_hz=2_500))
+        backend = RpitxTransmitter(
+            settings,
+            runner=runner,
+            which=lambda _: "/fake/backend",
+            geteuid=lambda: 0,
+        )
+        with self.assertRaisesRegex(RuntimeError, "timed out"):
             backend.transmit([Pulse(True, 644, "data", 0)])
 
 

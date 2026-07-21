@@ -80,13 +80,21 @@ class RpitxTransmitter:
             )
             for pulse in pulses
         )
-        completed = self._runner(
-            arguments,
-            input=pulse_input,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
+        planned_seconds = sum(pulse.duration_us for pulse in pulses) / 1_000_000
+        timeout_seconds = max(3.0, planned_seconds + 3.0)
+        try:
+            completed = self._runner(
+                arguments,
+                input=pulse_input,
+                text=True,
+                capture_output=True,
+                check=False,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError(
+                f"rpitx backend timed out after {timeout_seconds:.1f} seconds"
+            ) from exc
         if completed.returncode != 0:
             detail = completed.stderr.strip() or completed.stdout.strip()
             raise RuntimeError(

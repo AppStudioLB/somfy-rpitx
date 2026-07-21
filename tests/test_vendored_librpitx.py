@@ -8,8 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class VendoredLibrpitxTests(unittest.TestCase):
     EXPECTED_SHA256 = {
-        "fskburst.cpp": "16eb7efc463086439d78e989cbd48ee74df18ce9de2ca039ef629fa94acff1c5",
-        "fskburst.h": "1db60f13f47435e38508618952e75ffa3e1f077164ebe83e023071aa87be460b",
+        "fskburst.cpp": "b8ef315794d02223717f93849e5dd4a94f70e9ebfec4cabc85a5f629b93b6ab8",
+        "fskburst.h": "43be6c6b9a8502675f94bf102f200035d44a3a916c2f4cb8cf4e7b196125ecc1",
         "dma.cpp": "524800e3d08e8c3cb9a3c8dd3fb8ee8fab9cdffcc36803ce5efb8ae784b2501a",
         "dma.h": "b05820668b54c594658397832bb30f165dff4e039e27910dee0e2d6a98069389",
         "gpio.cpp": "d6c4d19308fb6a3184b42aaab166a0d026cf88bf8ac0ed1bc550fc8c9533ce98",
@@ -24,7 +24,7 @@ class VendoredLibrpitxTests(unittest.TestCase):
         "rpi.h": "b392157ef5ceef640f348ea15292cbdd836d80b9bdc70f5e74dfe231bbe9cef4",
     }
 
-    def test_selected_sources_match_pinned_upstream(self):
+    def test_selected_sources_match_pinned_vendor_snapshot(self):
         source_dir = ROOT / "third_party" / "librpitx" / "src"
         for name, expected in self.EXPECTED_SHA256.items():
             with self.subTest(name=name):

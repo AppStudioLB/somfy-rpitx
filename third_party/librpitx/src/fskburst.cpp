@@ -18,9 +18,10 @@ This program is free software: you can redistribute it and/or modify
 #include "stdio.h"
 #include "fskburst.h"
 #include "util.h"
+#include <chrono>
 #include <unistd.h>
 
-fskburst::fskburst(uint64_t TuneFrequency, float SymbolRate, float Deviation, int Channel, uint32_t FifoSize, size_t upsample,float RatioRamp) : bufferdma(Channel, FifoSize * upsample + 3, 2, 1), freqdeviation(Deviation), SR_upsample(upsample)
+fskburst::fskburst(uint64_t TuneFrequency, float SymbolRate, float Deviation, int Channel, uint32_t FifoSize, size_t upsample,float RatioRamp) : bufferdma(Channel, FifoSize * upsample + 3, 2, 1), freqdeviation(Deviation), symbolrate(SymbolRate), SR_upsample(upsample)
 {
 
 	clkgpio::SetAdvancedPllMode(true);
@@ -133,11 +134,26 @@ void fskburst::SetSymbols(unsigned char *Symbols, uint32_t Size)
 	cbp->next = mem_virt_to_phys(lastcbp);
 
 	dma::start();
+	const uint64_t expected_us = static_cast<uint64_t>(
+		1000000.0 * static_cast<double>(Size) / symbolrate) + 1;
+	const uint64_t timeout_us = expected_us + 250000;
+	const auto deadline = std::chrono::steady_clock::now() +
+		std::chrono::microseconds(timeout_us);
 	while (isrunning()) //Block function : return until sent completely signal
 	{
 		//dbg_printf(1,"GPIO %x\n",clkgpio::gengpio.gpioreg[GPFSEL0]);
+		if (std::chrono::steady_clock::now() >= deadline)
+		{
+			dbg_printf(0, "DMA completion timeout after %llu us; forcing stop\n",
+				static_cast<unsigned long long>(timeout_us));
+			dma::stop();
+			break;
+		}
 		usleep(100);
 	}
+	// The DMA ACTIVE bit can remain asserted after its final control block on
+	// some kernels. Always restore GPIO 4 to input before returning.
+	disableclk(4);
 	dbg_printf(1, "FSK burst end Tx\n", cbp->src, cbp->dst, cbp->next);
 	usleep(100); //To be sure last symbol Tx ?
 }

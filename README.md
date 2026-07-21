@@ -254,6 +254,11 @@ sudo somfy-rpitx dry-run prog
 건너뜁니다. 이는 코드 중복 사용으로 수신기와 동기화가 깨지는 것보다 안전한
 방향입니다.
 
+성공하면 `sent UP/DOWN/STOP/PROG` 요약을 출력하고 즉시 프롬프트로 돌아옵니다.
+일부 커널에서 DMA 완료 플래그가 남는 경우에도 네이티브 백엔드가 예상 RF burst
+시간 뒤 GPIO 4를 입력으로 복구하며, 전체 백엔드에는 추가 3초 watchdog이 있어
+무한 대기하지 않습니다.
+
 ## Homebridge 전동 블라인드 등록
 
 같은 Raspberry Pi에서 Homebridge를 실행하면 이 저장소를
