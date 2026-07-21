@@ -4,6 +4,7 @@ AR ?= ar
 NPM ?= npm
 PREFIX ?= /usr/local
 DESTDIR ?=
+VENV_DIR ?= /opt/somfy-rpitx
 CPPFLAGS ?=
 CXXFLAGS ?= -std=c++14 -O2 -Wall -Wextra
 LDLIBS ?= -lm -lrt -lpthread
@@ -56,8 +57,12 @@ test-homebridge:
 	$(NPM) run test:syntax
 
 install: native
-	$(PYTHON) -m pip install . --prefix="$(DESTDIR)$(PREFIX)"
+	$(PYTHON) -m venv --system-site-packages "$(DESTDIR)$(VENV_DIR)"
+	"$(DESTDIR)$(VENV_DIR)/bin/python" -m pip install --no-deps --no-build-isolation .
 	install -d "$(DESTDIR)$(PREFIX)/bin"
+	ln -sfn "$(VENV_DIR)/bin/somfy-rpitx" "$(DESTDIR)$(PREFIX)/bin/somfy-rpitx"
+	ln -sfn "$(VENV_DIR)/bin/somfy-rpitx-homebridge" \
+		"$(DESTDIR)$(PREFIX)/bin/somfy-rpitx-homebridge"
 	install -m 0755 build/somfy-rpitx-tx "$(DESTDIR)$(PREFIX)/bin/somfy-rpitx-tx"
 	install -d -m 0750 "$(DESTDIR)/etc/somfy-rpitx"
 	@if [ ! -e "$(DESTDIR)/etc/somfy-rpitx/config.json" ]; then \

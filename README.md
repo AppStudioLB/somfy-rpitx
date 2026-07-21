@@ -90,7 +90,8 @@ Raspberry Pi OS Bookworm에서는 `rpitx` 저장소나 `/opt/vc` VideoCore
 
 ```sh
 sudo apt update
-sudo apt install -y git build-essential python3 python3-venv python3-pip
+sudo apt install -y git build-essential python3 python3-venv python3-pip \
+  python3-setuptools python3-wheel
 ```
 
 그다음 이 프로젝트 하나만 내려받아 설치합니다.
@@ -105,24 +106,17 @@ sudo make install
 
 `make native`는 `build/librpitx/librpitx-somfy.a`와
 `build/somfy-rpitx-tx`만 만듭니다. 시스템에 헤더나 라이브러리를 설치하지
-않으며 재부팅도 필요하지 않습니다. `sudo make install`은 완성된 송신기,
-Python CLI, 기본 설정, 상태 디렉터리와 Homebridge 전용 제한 sudo 규칙을 함께
-설치하고 `visudo`로 문법을 검사합니다.
+않으며 재부팅도 필요하지 않습니다. `sudo make install`은 Bookworm의 시스템
+Python을 변경하지 않고 `/opt/somfy-rpitx` 전용 가상환경을 자동 생성합니다.
+이어서 `/usr/local/bin/somfy-rpitx`와 Homebridge helper 링크, 완성된 송신기,
+기본 설정, 상태 디렉터리 및 제한 sudo 규칙까지 설치하고 `visudo`로 문법을
+검사합니다. 별도의 수동 `pip`나 심볼릭 링크 명령은 필요하지 않습니다.
 
-Bookworm의 외부 관리 Python 정책 때문에 `sudo make install`의 `pip` 단계가
-거부되는 환경에서는 아래 가상환경 설치를 사용합니다. 네이티브 송신기는 이미
-저장소 내부 소스만으로 빌드된 결과를 설치합니다.
+설치 확인:
 
 ```sh
-sudo python3 -m venv /opt/somfy-rpitx
-sudo /opt/somfy-rpitx/bin/pip install "$PWD"
-sudo ln -s /opt/somfy-rpitx/bin/somfy-rpitx /usr/local/bin/somfy-rpitx
-sudo ln -s /opt/somfy-rpitx/bin/somfy-rpitx-homebridge \
-  /usr/local/bin/somfy-rpitx-homebridge
-sudo install -m 0755 build/somfy-rpitx-tx /usr/local/bin/somfy-rpitx-tx
-sudo install -d -m 0750 /etc/somfy-rpitx /var/lib/somfy-rpitx
-sudo install -m 0640 config.example.json /etc/somfy-rpitx/config.json
-sudo make install-sudoers
+command -v somfy-rpitx
+sudo somfy-rpitx dry-run prog
 ```
 
 현재 포함한 DMA/GPIO 구현은 BCM283x 및 BCM2711 계열 Raspberry Pi를 대상으로
