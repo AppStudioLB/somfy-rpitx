@@ -36,7 +36,7 @@ export class SomfyBlindAccessory {
       .setCharacteristic(this.Characteristic.Manufacturer, "Somfy / rpitx")
       .setCharacteristic(this.Characteristic.Model, "447 JOO RTS virtual remote")
       .setCharacteristic(this.Characteristic.SerialNumber, device.id)
-      .setCharacteristic(this.Characteristic.FirmwareRevision, "0.2.0");
+      .setCharacteristic(this.Characteristic.FirmwareRevision, "0.3.0");
 
     this.service =
       accessory.getService(this.Service.WindowCovering) ||
