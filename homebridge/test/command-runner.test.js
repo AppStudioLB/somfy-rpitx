@@ -6,7 +6,8 @@ import { CommandRunner } from "../command-runner.js";
 function options(overrides = {}) {
   return {
     cliPath: "/usr/local/bin/somfy-rpitx",
-    configPath: "/etc/somfy-rpitx/living.json",
+    helperPath: "/usr/local/bin/somfy-rpitx-homebridge",
+    configPath: "/etc/somfy-rpitx/config.json",
     stateFile: "/var/lib/somfy-rpitx/living.json",
     useSudo: true,
     sudoPath: "/usr/bin/sudo",
@@ -28,9 +29,9 @@ test("sudo invocation uses fixed argv and no shell", async () => {
   assert.equal(calls[0].executable, "/usr/bin/sudo");
   assert.deepEqual(calls[0].args, [
     "-n",
-    "/usr/local/bin/somfy-rpitx",
+    "/usr/local/bin/somfy-rpitx-homebridge",
     "--config",
-    "/etc/somfy-rpitx/living.json",
+    "/etc/somfy-rpitx/config.json",
     "--state-file",
     "/var/lib/somfy-rpitx/living.json",
     "up",
@@ -46,7 +47,7 @@ test("non-sudo invocation executes the CLI directly", () => {
     executable: "/usr/local/bin/somfy-rpitx",
     arguments: [
       "--config",
-      "/etc/somfy-rpitx/living.json",
+      "/etc/somfy-rpitx/config.json",
       "--state-file",
       "/var/lib/somfy-rpitx/living.json",
       "stop",

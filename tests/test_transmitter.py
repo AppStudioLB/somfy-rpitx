@@ -8,13 +8,8 @@ from somfy_rpitx.transmitter import RpitxTransmitter
 
 
 class TransmitterTests(unittest.TestCase):
-    def test_disabled_transmission_fails_before_other_checks(self) -> None:
-        backend = RpitxTransmitter(Settings(), geteuid=lambda: 0)
-        with self.assertRaisesRegex(RuntimeError, "disabled"):
-            backend.validate()
-
     def test_unresolved_tones_are_rejected(self) -> None:
-        settings = Settings(transmit_enabled=True)
+        settings = Settings()
         backend = RpitxTransmitter(settings, geteuid=lambda: 0)
         with self.assertRaisesRegex(RuntimeError, "unresolved"):
             backend.validate()
@@ -22,7 +17,6 @@ class TransmitterTests(unittest.TestCase):
     def test_root_is_required(self) -> None:
         settings = Settings(
             rf=FSKSettings(deviation_hz=2_500),
-            transmit_enabled=True,
         )
         backend = RpitxTransmitter(settings, geteuid=lambda: 1000)
         with self.assertRaises(PermissionError):
@@ -38,7 +32,6 @@ class TransmitterTests(unittest.TestCase):
         settings = Settings(
             rf=FSKSettings(deviation_hz=2_500, invert_mark_space=True),
             transmitter_executable="somfy-rpitx-tx",
-            transmit_enabled=True,
         )
         backend = RpitxTransmitter(
             settings,
@@ -68,7 +61,6 @@ class TransmitterTests(unittest.TestCase):
 
         settings = Settings(
             rf=FSKSettings(deviation_hz=2_500),
-            transmit_enabled=True,
         )
         backend = RpitxTransmitter(
             settings,

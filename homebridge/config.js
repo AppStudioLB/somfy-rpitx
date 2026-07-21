@@ -2,6 +2,7 @@ import path from "node:path";
 
 const DEFAULTS = Object.freeze({
   cliPath: "/usr/local/bin/somfy-rpitx",
+  helperPath: "/usr/local/bin/somfy-rpitx-homebridge",
   sudoPath: "/usr/bin/sudo",
   useSudo: true,
   commandTimeoutSeconds: 15,
@@ -53,6 +54,10 @@ export function normalizeConfig(config) {
       config.cliPath || DEFAULTS.cliPath,
       "cliPath",
     ),
+    helperPath: absolutePath(
+      config.helperPath || DEFAULTS.helperPath,
+      "helperPath",
+    ),
     sudoPath: absolutePath(
       config.sudoPath || DEFAULTS.sudoPath,
       "sudoPath",
@@ -85,9 +90,9 @@ export function normalizeConfig(config) {
       throw new TypeError(`blinds[${index}] must be an object`);
     }
     const id = requiredString(blind.id, `blinds[${index}].id`);
-    if (!/^[A-Za-z0-9._-]+$/.test(id)) {
+    if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(id)) {
       throw new TypeError(
-        `blinds[${index}].id may contain only letters, digits, '.', '_' and '-'`,
+        `blinds[${index}].id must start with a letter or digit and may contain only letters, digits, '.', '_' and '-'`,
       );
     }
     if (identifiers.has(id)) {

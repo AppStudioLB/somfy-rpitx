@@ -23,6 +23,10 @@ function validConfig() {
 test("configuration applies safe executable defaults", () => {
   const result = normalizeConfig(validConfig());
   assert.equal(result.cliPath, "/usr/local/bin/somfy-rpitx");
+  assert.equal(
+    result.helperPath,
+    "/usr/local/bin/somfy-rpitx-homebridge",
+  );
   assert.equal(result.sudoPath, "/usr/bin/sudo");
   assert.equal(result.useSudo, true);
   assert.equal(result.configPath, "/etc/somfy-rpitx/config.json");
@@ -71,8 +75,6 @@ test("Homebridge UI starter configuration is immediately valid", () => {
   );
   const starterConfig = {
     name: schema.schema.properties.name.default,
-    configPath: schema.schema.properties.configPath.default,
-    stateDirectory: schema.schema.properties.stateDirectory.default,
     blinds: schema.schema.properties.blinds.default,
   };
   const result = normalizeConfig(starterConfig);

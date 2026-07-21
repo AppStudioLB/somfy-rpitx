@@ -6,7 +6,7 @@ DESTDIR ?=
 CXXFLAGS ?= -std=c++14 -O2 -Wall -Wextra
 LDLIBS ?= -lrpitx -lm -lrt -lpthread
 
-.PHONY: all native test test-python test-homebridge install clean
+.PHONY: all native test test-python test-homebridge install install-sudoers clean
 
 all: native
 
@@ -34,6 +34,13 @@ install: native
 		install -m 0640 config.example.json "$(DESTDIR)/etc/somfy-rpitx/config.json"; \
 	fi
 	install -d -m 0750 "$(DESTDIR)/var/lib/somfy-rpitx"
+	$(MAKE) install-sudoers DESTDIR="$(DESTDIR)"
+
+install-sudoers:
+	@if [ -z "$(DESTDIR)" ]; then /usr/sbin/visudo -cf packaging/homebridge-somfy-rpitx.sudoers; fi
+	install -d "$(DESTDIR)/etc/sudoers.d"
+	install -m 0440 packaging/homebridge-somfy-rpitx.sudoers \
+		"$(DESTDIR)/etc/sudoers.d/homebridge-somfy-rpitx"
 
 clean:
 	rm -rf build

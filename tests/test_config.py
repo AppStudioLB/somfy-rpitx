@@ -7,9 +7,8 @@ from somfy_rpitx.config import Settings, load_settings
 
 
 class ConfigTests(unittest.TestCase):
-    def test_missing_file_uses_unresolved_safe_defaults(self) -> None:
+    def test_missing_file_uses_unresolved_defaults(self) -> None:
         settings = load_settings(Path("/definitely/missing/somfy.json"))
-        self.assertFalse(settings.transmit_enabled)
         self.assertIsNone(settings.rf.resolve())
 
     def test_load_explicit_frequencies(self) -> None:
@@ -30,16 +29,15 @@ class ConfigTests(unittest.TestCase):
                 encoding="utf-8",
             )
             settings = load_settings(path)
-        self.assertTrue(settings.transmit_enabled)
         self.assertTrue(settings.rf.invert_mark_space)
 
     def test_unknown_key_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
             Settings.from_mapping({"frequency": 447_700_000})
 
-    def test_string_false_cannot_accidentally_enable_transmission(self) -> None:
-        with self.assertRaisesRegex(ValueError, "transmit_enabled"):
-            Settings.from_mapping({"transmit_enabled": "false"})
+    def test_legacy_transmit_switch_is_ignored(self) -> None:
+        settings = Settings.from_mapping({"transmit_enabled": "obsolete"})
+        self.assertFalse(hasattr(settings, "transmit_enabled"))
 
 
 if __name__ == "__main__":

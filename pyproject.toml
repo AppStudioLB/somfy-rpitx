@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "somfy-rpitx"
-version = "0.1.0"
+version = "0.2.0"
 description = "Somfy RTS frame generation and configurable 447.7 MHz FSK output for Raspberry Pi/rpitx"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -17,6 +17,7 @@ Repository = "https://github.com/AppStudioLB/somfy-rpitx.git"
 
 [project.scripts]
 somfy-rpitx = "somfy_rpitx.cli:main"
+somfy-rpitx-homebridge = "somfy_rpitx.homebridge_helper:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

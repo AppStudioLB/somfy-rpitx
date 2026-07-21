@@ -3,33 +3,21 @@
   "pluginType": "platform",
   "singular": true,
   "strictValidation": false,
-  "headerDisplay": "### Somfy RTS 블라인드 설정\n\n개별 블라인드와 전체 그룹을 Homebridge UI에서 추가할 수 있습니다. 처음 설치하면 **블라인드 3개 + 전체 블라인드 1개** 예제가 준비됩니다. 각 항목의 고유 ID는 가상 리모컨 주소와 HomeKit 액세서리를 구분하므로 등록 후 바꾸지 마십시오.",
-  "footerDisplay": "### 등록 방법\n\n개별 항목은 해당 모터 하나에만 PROG 등록하고, **전체 그룹** 항목의 가상 리모컨은 제어할 모든 모터에 각각 등록하십시오. 그룹은 특수 방송 명령이 아니라 여러 모터가 같은 가상 리모컨 주소를 학습하는 방식입니다.\n\n설정 저장 후 Homebridge를 재시작해야 적용됩니다. 자세한 설치·sudo·PROG 절차는 [README](https://github.com/AppStudioLB/somfy-rpitx#homebridge-%EC%A0%84%EB%8F%99-%EB%B8%94%EB%9D%BC%EC%9D%B8%EB%93%9C-%EB%93%B1%EB%A1%9D)를 참고하십시오.",
+  "headerDisplay": "### Somfy RTS 블라인드 설정\n\n처음 설치하면 **블라인드 3개 + 전체 블라인드 1개**가 준비됩니다. 이름과 이동 시간만 맞추면 됩니다. 고유 ID는 모터 등록 후 바꾸지 마십시오.",
+  "footerDisplay": "### 등록 방법\n\n개별 항목은 해당 모터 하나에만 PROG 등록하고, **전체 그룹**은 같은 가상 리모컨을 제어할 모든 모터에 각각 등록하십시오. 저장 후 Homebridge를 재시작하면 적용됩니다. [README](https://github.com/AppStudioLB/somfy-rpitx#homebridge-%EC%A0%84%EB%8F%99-%EB%B8%94%EB%9D%BC%EC%9D%B8%EB%93%9C-%EB%93%B1%EB%A1%9D)",
   "schema": {
     "type": "object",
     "required": [
       "name",
       "blinds"
     ],
-    "additionalProperties": false,
+    "additionalProperties": true,
     "properties": {
       "name": {
         "title": "플랫폼 이름",
         "description": "Homebridge 로그에 표시되는 이름입니다.",
         "type": "string",
         "default": "Somfy rpitx"
-      },
-      "configPath": {
-        "title": "공통 RF 설정 파일",
-        "description": "중심 주파수, FSK 편이와 송신 허용 설정이 들어 있는 somfy-rpitx 설정 파일입니다. 모든 블라인드가 기본적으로 이 파일을 공유합니다.",
-        "type": "string",
-        "default": "/etc/somfy-rpitx/config.json"
-      },
-      "stateDirectory": {
-        "title": "가상 리모컨 저장 폴더",
-        "description": "각 항목의 리모컨 주소와 롤링 코드를 저장합니다. 별도 상태 파일을 지정하지 않으면 '<고유 ID>.json'이 이 폴더에 자동 생성됩니다.",
-        "type": "string",
-        "default": "/var/lib/somfy-rpitx"
       },
       "blinds": {
         "title": "블라인드와 전체 그룹",
@@ -42,32 +30,28 @@
             "name": "블라인드 1",
             "remoteType": "individual",
             "openTimeSeconds": 25,
-            "closeTimeSeconds": 25,
-            "initialPosition": 0
+            "closeTimeSeconds": 25
           },
           {
             "id": "blind-2",
             "name": "블라인드 2",
             "remoteType": "individual",
             "openTimeSeconds": 25,
-            "closeTimeSeconds": 25,
-            "initialPosition": 0
+            "closeTimeSeconds": 25
           },
           {
             "id": "blind-3",
             "name": "블라인드 3",
             "remoteType": "individual",
             "openTimeSeconds": 25,
-            "closeTimeSeconds": 25,
-            "initialPosition": 0
+            "closeTimeSeconds": 25
           },
           {
             "id": "all-blinds",
             "name": "전체 블라인드",
             "remoteType": "group",
             "openTimeSeconds": 25,
-            "closeTimeSeconds": 25,
-            "initialPosition": 0
+            "closeTimeSeconds": 25
           }
         ],
         "items": {
@@ -79,7 +63,7 @@
             "openTimeSeconds",
             "closeTimeSeconds"
           ],
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "name": {
               "title": "HomeKit 표시 이름",
@@ -109,10 +93,10 @@
             },
             "id": {
               "title": "고유 ID",
-              "description": "영문자·숫자·점·밑줄·하이픈만 사용할 수 있습니다. 예: living-left, blind-2, all-blinds. 모터 등록 후에는 변경하지 마십시오.",
+              "description": "영문자 또는 숫자로 시작하고 영문자·숫자·점·밑줄·하이픈만 사용할 수 있습니다. 예: living-left, blind-2, all-blinds. 모터 등록 후에는 변경하지 마십시오.",
               "type": "string",
               "default": "new-blind",
-              "pattern": "^[A-Za-z0-9._-]+$"
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
             },
             "openTimeSeconds": {
               "title": "완전히 열리는 시간(초)",
@@ -129,53 +113,9 @@
               "minimum": 1,
               "maximum": 600,
               "default": 25
-            },
-            "initialPosition": {
-              "title": "시작 위치 추정값(%)",
-              "description": "Homebridge가 처음 시작할 때 사용할 위치입니다. 0은 완전히 닫힘, 100은 완전히 열림입니다.",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 100,
-              "default": 0
-            },
-            "configPath": {
-              "title": "고급: 별도 RF 설정 파일",
-              "description": "이 항목만 다른 RF 설정을 사용할 때 입력합니다. 비워 두면 위의 공통 RF 설정 파일을 사용합니다.",
-              "type": "string",
-              "default": ""
-            },
-            "stateFile": {
-              "title": "고급: 별도 상태 파일",
-              "description": "기존 가상 리모컨 상태를 옮겨올 때만 입력합니다. 비워 두면 저장 폴더와 고유 ID로 자동 생성됩니다. 서로 다른 항목에 같은 파일을 지정하지 마십시오.",
-              "type": "string",
-              "default": ""
             }
           }
         }
-      },
-      "commandTimeoutSeconds": {
-        "title": "명령 제한 시간(초)",
-        "description": "RF 명령 한 번이 완료되기를 기다리는 최대 시간입니다.",
-        "type": "number",
-        "minimum": 1,
-        "maximum": 60,
-        "default": 15
-      },
-      "useSudo": {
-        "title": "비밀번호 없는 sudo 사용",
-        "description": "Homebridge 서비스에서 rpitx를 실행하려면 일반적으로 켜야 합니다. README의 제한된 sudoers 규칙을 먼저 적용하십시오.",
-        "type": "boolean",
-        "default": true
-      },
-      "cliPath": {
-        "title": "고급: somfy-rpitx 실행 파일",
-        "type": "string",
-        "default": "/usr/local/bin/somfy-rpitx"
-      },
-      "sudoPath": {
-        "title": "고급: sudo 실행 파일",
-        "type": "string",
-        "default": "/usr/bin/sudo"
       }
     }
   }

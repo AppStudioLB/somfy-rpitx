@@ -5,6 +5,7 @@ const ALLOWED_ACTIONS = new Set(["up", "down", "stop"]);
 export class CommandRunner {
   constructor(options, execFileImplementation = execFile) {
     this.cliPath = options.cliPath;
+    this.helperPath = options.helperPath;
     this.configPath = options.configPath;
     this.stateFile = options.stateFile;
     this.useSudo = options.useSudo;
@@ -28,7 +29,7 @@ export class CommandRunner {
     if (this.useSudo) {
       return {
         executable: this.sudoPath,
-        arguments: ["-n", this.cliPath, ...cliArguments],
+        arguments: ["-n", this.helperPath, ...cliArguments],
       };
     }
     return {

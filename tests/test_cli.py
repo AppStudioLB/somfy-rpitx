@@ -54,7 +54,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(output.getvalue().count("command: PROG (0x8)"), 2)
         self.assertIn("frame_count: 4", output.getvalue())
 
-    def test_disabled_actual_command_does_not_create_state(self) -> None:
+    def test_unresolved_actual_command_does_not_create_state(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             state = Path(directory) / "state.json"
             error = io.StringIO()
@@ -62,7 +62,7 @@ class CliTests(unittest.TestCase):
                 result = main(["--state-file", str(state), "up"])
             self.assertEqual(result, 1)
             self.assertFalse(state.exists())
-            self.assertIn("disabled", error.getvalue())
+            self.assertIn("unresolved", error.getvalue())
 
 
 if __name__ == "__main__":

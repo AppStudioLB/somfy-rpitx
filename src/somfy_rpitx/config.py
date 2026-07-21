@@ -24,7 +24,6 @@ class Settings:
     prog_frame_count: int = 4
     state_file: Path = DEFAULT_STATE_PATH
     transmitter_executable: str = "somfy-rpitx-tx"
-    transmit_enabled: bool = False
 
     def __post_init__(self) -> None:
         if self.frame_count < 1:
@@ -43,6 +42,8 @@ class Settings:
             "prog_frame_count",
             "state_file",
             "transmitter_executable",
+            # Accepted only so existing installations keep working. The old
+            # switch is intentionally ignored; valid RF settings are enough.
             "transmit_enabled",
         }
         unknown = set(values) - allowed
@@ -59,7 +60,6 @@ class Settings:
             transmitter_executable=str(
                 values.get("transmitter_executable", "somfy-rpitx-tx")
             ),
-            transmit_enabled=_boolean(values.get("transmit_enabled", False), "transmit_enabled"),
         )
 
 
@@ -68,12 +68,6 @@ def _mapping_or_none(value: object, name: str) -> Mapping[str, object] | None:
         return None
     if not isinstance(value, dict):
         raise ValueError(f"{name} must be a JSON object")
-    return value
-
-
-def _boolean(value: object, name: str) -> bool:
-    if not isinstance(value, bool):
-        raise ValueError(f"{name} must be true or false")
     return value
 
 

@@ -40,11 +40,6 @@ class RpitxTransmitter:
     def validate(self) -> ValidatedTransmitter:
         """Validate everything that can fail before consuming a rolling code."""
 
-        if not self.settings.transmit_enabled:
-            raise RuntimeError(
-                "actual RF transmission is disabled; set transmit_enabled=true "
-                "after measuring FSK tones and confirming regulatory compliance"
-            )
         fsk = self.settings.rf.resolve()
         if fsk is None:
             raise RuntimeError(

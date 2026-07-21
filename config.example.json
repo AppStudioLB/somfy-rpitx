@@ -10,6 +10,5 @@
   "frame_count": 3,
   "prog_frame_count": 4,
   "state_file": "/var/lib/somfy-rpitx/state.json",
-  "transmitter_executable": "somfy-rpitx-tx",
-  "transmit_enabled": false
+  "transmitter_executable": "somfy-rpitx-tx"
 }

@@ -1,0 +1,2 @@
+# Installed automatically by somfy-rpitx. The helper validates every argument.
+homebridge ALL=(root) NOPASSWD: /usr/local/bin/somfy-rpitx-homebridge *
