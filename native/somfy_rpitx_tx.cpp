@@ -6,7 +6,7 @@
  * SPACE/MARK here so inversion remains explicit.
  */
 
-#include <librpitx/librpitx.h>
+#include "fskburst.h"
 
 #include <algorithm>
 #include <chrono>

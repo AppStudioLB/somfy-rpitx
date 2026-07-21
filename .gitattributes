@@ -1,0 +1,2 @@
+# Preserve the pinned upstream formatting; provenance tests verify file hashes.
+third_party/librpitx/** whitespace=-trailing-space,-space-before-tab,-blank-at-eof
