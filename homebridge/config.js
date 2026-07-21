@@ -5,6 +5,8 @@ const DEFAULTS = Object.freeze({
   sudoPath: "/usr/bin/sudo",
   useSudo: true,
   commandTimeoutSeconds: 15,
+  configPath: "/etc/somfy-rpitx/config.json",
+  stateDirectory: "/var/lib/somfy-rpitx",
 });
 
 function requiredString(value, field) {
@@ -20,6 +22,13 @@ function absolutePath(value, field) {
     throw new TypeError(`${field} must be an absolute path`);
   }
   return result;
+}
+
+function optionalAbsolutePath(value, fallback, field) {
+  if (value === undefined || value === null || value === "") {
+    return fallback;
+  }
+  return absolutePath(value, field);
 }
 
 function numberInRange(value, field, minimum, maximum) {
@@ -56,12 +65,21 @@ export function normalizeConfig(config) {
       1,
       60,
     ),
+    configPath: absolutePath(
+      config.configPath || DEFAULTS.configPath,
+      "configPath",
+    ),
+    stateDirectory: absolutePath(
+      config.stateDirectory || DEFAULTS.stateDirectory,
+      "stateDirectory",
+    ),
   };
   if (typeof globalOptions.useSudo !== "boolean") {
     throw new TypeError("useSudo must be true or false");
   }
 
   const identifiers = new Set();
+  const stateFiles = new Set();
   const blinds = config.blinds.map((blind, index) => {
     if (!blind || typeof blind !== "object") {
       throw new TypeError(`blinds[${index}] must be an object`);
@@ -77,18 +95,34 @@ export function normalizeConfig(config) {
     }
     identifiers.add(id);
 
+    const remoteType = blind.remoteType ?? "individual";
+    if (!["individual", "group"].includes(remoteType)) {
+      throw new TypeError(
+        `blinds[${index}].remoteType must be "individual" or "group"`,
+      );
+    }
+
+    const stateFile = optionalAbsolutePath(
+      blind.stateFile,
+      path.join(globalOptions.stateDirectory, `${id}.json`),
+      `blinds[${index}].stateFile`,
+    );
+    if (stateFiles.has(stateFile)) {
+      throw new TypeError(`duplicate rolling-code state file: ${stateFile}`);
+    }
+    stateFiles.add(stateFile);
+
     return {
       ...globalOptions,
       id,
       name: requiredString(blind.name, `blinds[${index}].name`),
-      configPath: absolutePath(
+      remoteType,
+      configPath: optionalAbsolutePath(
         blind.configPath,
+        globalOptions.configPath,
         `blinds[${index}].configPath`,
       ),
-      stateFile: absolutePath(
-        blind.stateFile,
-        `blinds[${index}].stateFile`,
-      ),
+      stateFile,
       openTimeSeconds: numberInRange(
         blind.openTimeSeconds,
         `blinds[${index}].openTimeSeconds`,

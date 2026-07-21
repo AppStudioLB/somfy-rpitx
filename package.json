@@ -1,7 +1,7 @@
 {
   "name": "homebridge-somfy-rpitx",
   "displayName": "Homebridge Somfy rpitx",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Expose Korean 447.7 MHz Somfy RTS blinds controlled by somfy-rpitx as HomeKit window coverings.",
   "type": "module",
   "main": "homebridge/index.js",

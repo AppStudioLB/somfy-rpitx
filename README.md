@@ -300,12 +300,21 @@ root가 필요합니다. 전체 CLI에 포괄적인 sudo 권한을 주지 말고
 추가합니다. 줄바꿈의 `\`도 그대로 사용하십시오.
 
 ```sudoers
-Cmnd_Alias SOMFY_RPITX_LIVING = \
-  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/state.json up, \
-  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/state.json down, \
-  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/state.json stop
+Cmnd_Alias SOMFY_RPITX = \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-1.json up, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-1.json down, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-1.json stop, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-2.json up, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-2.json down, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-2.json stop, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-3.json up, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-3.json down, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/blind-3.json stop, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/all-blinds.json up, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/all-blinds.json down, \
+  /usr/local/bin/somfy-rpitx --config /etc/somfy-rpitx/config.json --state-file /var/lib/somfy-rpitx/all-blinds.json stop
 
-homebridge ALL=(root) NOPASSWD: SOMFY_RPITX_LIVING
+homebridge ALL=(root) NOPASSWD: SOMFY_RPITX
 ```
 
 문법과 비밀번호 없는 실행을 확인합니다.
@@ -315,16 +324,43 @@ sudo visudo -cf /etc/sudoers.d/homebridge-somfy-rpitx
 sudo -l -U homebridge
 ```
 
-출력에는 위 세 명령만 나타나야 합니다. 실제 실행 권한은 커튼이 움직여도
+출력에는 위 12개 명령만 나타나야 합니다. 실제 실행 권한은 커튼이 움직여도
 안전한 상태에서 `sudo -u homebridge sudo -n ... up` 전체 명령을 한 번
-실행해 확인하십시오. 여러 블라인드에 별도 설정·상태 파일을 사용하면 각
-경로에 대해 `up`, `down`, `stop` 세 항목을 추가해야 합니다.
+실행해 확인하십시오. UI에서 고유 ID나 별도 설정·상태 파일 경로를 변경했다면
+sudoers의 해당 경로도 똑같이 변경해야 합니다.
 
 ### 3. Homebridge 설정
 
-Homebridge UI의 플러그인 설정 화면을 사용하거나
-`/var/lib/homebridge/config.json`의 `platforms` 배열에 다음 항목을
-추가합니다.
+Homebridge UI에서 **Plugins → Homebridge Somfy rpitx → Settings**를 엽니다.
+처음 설정 화면에는 다음 네 항목이 자동으로 준비됩니다.
+
+- 블라인드 1, 블라인드 2, 블라인드 3: 각 모터를 독립 제어
+- 전체 블라인드: 세 모터를 동시에 제어하는 그룹
+
+각 항목에서 표시 이름, 고유 ID, 완전히 열리고 닫히는 시간만 확인하면 됩니다.
+공통 RF 설정 파일은 `/etc/somfy-rpitx/config.json`, 가상 리모컨 저장 폴더는
+`/var/lib/somfy-rpitx`가 기본값입니다. 별도 상태 파일을 입력하지 않으면
+고유 ID를 이용해 다음처럼 자동 생성합니다.
+
+```text
+/var/lib/somfy-rpitx/blind-1.json
+/var/lib/somfy-rpitx/blind-2.json
+/var/lib/somfy-rpitx/blind-3.json
+/var/lib/somfy-rpitx/all-blinds.json
+```
+
+UI에서 **제어 종류**를 `개별 블라인드` 또는 `전체/그룹 블라인드`로 선택할 수
+있습니다. 이 값은 설정 화면에서 용도를 명확히 구분하기 위한 것으로 RTS
+프레임을 변경하지는 않습니다. 그룹 항목의 가상 리모컨 주소를 제어할 모든
+모터에 등록하면 해당 HomeKit 타일 하나로 모두 움직입니다.
+
+고급 설정의 별도 RF 설정 파일과 별도 상태 파일은 기존 설정을 이전하거나
+특정 항목만 다른 RF 프로파일을 사용할 때만 입력합니다. 서로 다른 항목에
+같은 상태 파일을 지정하면 플러그인이 시작을 거부하여 롤링 코드 충돌을
+방지합니다.
+
+UI 대신 `/var/lib/homebridge/config.json`을 직접 편집하려면 `platforms`
+배열에 다음처럼 추가할 수 있습니다. UI 기본 설정과 같은 구성입니다.
 
 ```json
 {
@@ -334,12 +370,37 @@ Homebridge UI의 플러그인 설정 화면을 사용하거나
   "useSudo": true,
   "sudoPath": "/usr/bin/sudo",
   "commandTimeoutSeconds": 15,
+  "configPath": "/etc/somfy-rpitx/config.json",
+  "stateDirectory": "/var/lib/somfy-rpitx",
   "blinds": [
     {
-      "id": "living-room-blind",
-      "name": "거실 블라인드",
-      "configPath": "/etc/somfy-rpitx/config.json",
-      "stateFile": "/var/lib/somfy-rpitx/state.json",
+      "id": "blind-1",
+      "name": "블라인드 1",
+      "remoteType": "individual",
+      "openTimeSeconds": 25,
+      "closeTimeSeconds": 25,
+      "initialPosition": 0
+    },
+    {
+      "id": "blind-2",
+      "name": "블라인드 2",
+      "remoteType": "individual",
+      "openTimeSeconds": 25,
+      "closeTimeSeconds": 25,
+      "initialPosition": 0
+    },
+    {
+      "id": "blind-3",
+      "name": "블라인드 3",
+      "remoteType": "individual",
+      "openTimeSeconds": 25,
+      "closeTimeSeconds": 25,
+      "initialPosition": 0
+    },
+    {
+      "id": "all-blinds",
+      "name": "전체 블라인드",
+      "remoteType": "group",
       "openTimeSeconds": 25,
       "closeTimeSeconds": 25,
       "initialPosition": 0
@@ -350,10 +411,25 @@ Homebridge UI의 플러그인 설정 화면을 사용하거나
 
 `id`는 HomeKit 액세서리 UUID의 기준이므로 등록 후 바꾸지 마십시오.
 `openTimeSeconds`와 `closeTimeSeconds`는 각각 완전 닫힘→열림,
-완전 열림→닫힘을 스톱워치로 측정한 값입니다. 하나의 가상 리모컨을 여러
-모터에 그룹 등록했다면 한 액세서리가 그 그룹을 함께 제어합니다. 독립 제어가
-필요하면 블라인드마다 서로 다른 `configPath`/`stateFile`과 가상 리모컨 주소가
-필요합니다.
+완전 열림→닫힘을 스톱워치로 측정한 값입니다.
+
+### 4. 개별 리모컨과 전체 그룹 등록
+
+설정을 저장하면 먼저 각 상태 파일을 만들고 주소를 확인합니다. `dry-run`은
+롤링 코드를 소비하지 않습니다.
+
+```sh
+sudo somfy-rpitx --state-file /var/lib/somfy-rpitx/blind-1.json dry-run prog
+sudo somfy-rpitx --state-file /var/lib/somfy-rpitx/blind-2.json dry-run prog
+sudo somfy-rpitx --state-file /var/lib/somfy-rpitx/blind-3.json dry-run prog
+sudo somfy-rpitx --state-file /var/lib/somfy-rpitx/all-blinds.json dry-run prog
+```
+
+그다음 각 개별 주소를 해당 모터 하나에만 PROG 등록합니다. 마지막으로
+`all-blinds.json` 주소를 1·2·3번 모터에 각각 PROG 등록합니다. 그룹 등록도
+한 번에 세 모터로 방송하는 과정이 아니라, 같은 가상 리모컨을 각 모터가
+차례로 학습하도록 하는 과정입니다. 정확한 등록 대기 진입 방법과 PROG 누름
+시간은 모터 설명서를 따르십시오.
 
 설정 후 Homebridge를 재시작합니다.
 
