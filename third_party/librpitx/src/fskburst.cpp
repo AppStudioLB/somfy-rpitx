@@ -136,7 +136,9 @@ void fskburst::SetSymbols(unsigned char *Symbols, uint32_t Size)
 	dma::start();
 	const uint64_t expected_us = static_cast<uint64_t>(
 		1000000.0 * static_cast<double>(Size) / symbolrate) + 1;
-	const uint64_t timeout_us = expected_us + 250000;
+	// The PCM clock determines the exact DMA duration. A short scheduling
+	// margin is enough before resetting a sticky ACTIVE status bit.
+	const uint64_t timeout_us = expected_us + 20000;
 	const auto deadline = std::chrono::steady_clock::now() +
 		std::chrono::microseconds(timeout_us);
 	while (isrunning()) //Block function : return until sent completely signal
@@ -144,7 +146,7 @@ void fskburst::SetSymbols(unsigned char *Symbols, uint32_t Size)
 		//dbg_printf(1,"GPIO %x\n",clkgpio::gengpio.gpioreg[GPFSEL0]);
 		if (std::chrono::steady_clock::now() >= deadline)
 		{
-			dbg_printf(0, "DMA completion timeout after %llu us; forcing stop\n",
+			dbg_printf(1, "DMA ACTIVE remained set after %llu us; resetting\n",
 				static_cast<unsigned long long>(timeout_us));
 			dma::stop();
 			break;

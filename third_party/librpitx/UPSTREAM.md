@@ -12,10 +12,12 @@ GPIO, mailbox, Raspberry Pi revision, and utility dependencies from
 
 Local changes are limited to normalizing the missing final newline in
 `src/util.h` and adding a bounded DMA-completion wait plus explicit GPIO 4
-clock shutdown in `src/fskburst.*`. This prevents a completed RF transmission
-from leaving the CLI blocked forever when a kernel keeps the DMA ACTIVE bit
-asserted. The project-level Makefile builds only these files into a private
-static archive. It deliberately does not use upstream's legacy
+clock shutdown in `src/fskburst.*`. The wait follows the calculated PCM burst
+duration with a 20 ms scheduling margin before resetting a sticky DMA ACTIVE
+bit. This prevents a completed RF transmission from leaving the CLI blocked
+forever without adding a long delay after every frame. The project-level
+Makefile builds only these files into a private static archive. It deliberately
+does not use upstream's legacy
 `/opt/vc/include`, `/opt/vc/lib`, or `-lbcm_host` flags: the selected source
 already implements the two required `bcm_host_*` address lookups in `src/rpi.c`
 using the Linux device tree.

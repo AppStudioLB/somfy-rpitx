@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class VendoredLibrpitxTests(unittest.TestCase):
     EXPECTED_SHA256 = {
-        "fskburst.cpp": "b8ef315794d02223717f93849e5dd4a94f70e9ebfec4cabc85a5f629b93b6ab8",
+        "fskburst.cpp": "e9282b9a711e09456f2916b9c234b38a05b33424e03666e56bb00bf5319b98ae",
         "fskburst.h": "43be6c6b9a8502675f94bf102f200035d44a3a916c2f4cb8cf4e7b196125ecc1",
         "dma.cpp": "524800e3d08e8c3cb9a3c8dd3fb8ee8fab9cdffcc36803ce5efb8ae784b2501a",
         "dma.h": "b05820668b54c594658397832bb30f165dff4e039e27910dee0e2d6a98069389",
